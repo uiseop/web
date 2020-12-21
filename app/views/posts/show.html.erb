@@ -1,0 +1,62 @@
+<p id="notice"><%= notice %></p>
+
+  <h2><%= @post.title %></h2>
+  <hr>
+
+  <p><strong>작성자</strong></p>
+  <p><%= @post.user.email %></p>
+  <hr>
+
+
+  <p><strong>내용</strong></p>
+  <p><%= @post.content %></p>
+  <hr>
+
+<p>
+    <strong>사진:</strong>
+    <%= image_tag("#{@post.image}") %>
+</p>
+
+<hr>
+<p><strong>댓글작성</strong></p>
+ <div class="well">
+  <form action="/posts/<%=@post.id%>" method="post">
+   <div class="form-group">
+<% if user_signed_in? %>
+    <input type="hidden" value="<%=current_user.id%>" name="user_id"></input>
+    <input type="hidden" value="<%=@post.id%>" name="post_id"></input>
+    <textarea class="form-control" rows="5" name="comment"></textarea>
+   </div>
+   <button type="submit" class="btn btn-default">댓글작성!</button>
+<% else %>
+<% end %>
+  </form>
+ </div>
+<hr>
+<p><strong>댓글목록</strong></p>
+<% @comments = @post.comments.all.reverse %>
+<% @comments.each do |c| %>
+ <div class="well">
+  <p>작성자 : <%= c.user.email %></p>
+  <p>내용 : <%= c.comment %></p>
+<% if user_signed_in? %>
+   <% if current_user.email == c.user.email %>
+<a href="/posts/<%=@post.id%>/comments/<%=c.id%>" data-method="delete" class="btn btn-primary">댓글삭제</a>
+   <% end %>
+<% end %>
+ </div>
+<% end %>
+
+<% if user_signed_in? %>
+<% if current_user.email == @post.user.email %>
+<%= link_to '수정하기', edit_post_path(@post) %> |
+  <%= link_to '돌아가기', posts_path %> |
+  <%= link_to '삭제하기', @post, method: :delete, data: { confirm: '게시물을 삭제하시겠습니까?' } %>
+<% else %>
+ <%= link_to '돌아가기', posts_path %>
+<% end %>
+<% else %>
+  <%= link_to '돌아가기', posts_path %>
+<% end %>
+
+
